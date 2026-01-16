@@ -43,4 +43,38 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
+# --- Security / Secrets ---
+.env
+.env.*
+*.env
+secrets.*
+*secrets*
+*.key
+*.pem
+*.p12
+*.pfx
+*.cer
+*.crt
+*.der
+*.mobileprovision
+*.jks
+*.keystore
 
+# --- iOS / Xcode local ---
+ios/Runner.xcconfig
+ios/Flutter/Generated.xcconfig
+ios/Flutter/flutter_export_environment.sh
+**/xcuserdata/
+**/*.xcuserstate
+**/*.xcscmblueprint
+**/*.xccheckout
+
+# --- Android local ---
+android/local.properties
+android/key.properties
+
+# --- IDE ---
+.vscode/
+
+# --- OS junk ---
+Thumbs.db
