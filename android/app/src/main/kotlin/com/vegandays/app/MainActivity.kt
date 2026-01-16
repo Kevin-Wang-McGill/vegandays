@@ -1,5 +1,6 @@
-package com.example.vegan_days
+package com.vegandays.app
 
 import io.flutter.embedding.android.FlutterActivity
 
 class MainActivity : FlutterActivity()
+
