@@ -89,16 +89,10 @@ class DesignTokens {
 
   static TextStyle headerBigNumberStyle(BuildContext context) {
     return Theme.of(context).textTheme.displaySmall?.copyWith(
-          fontWeight: FontWeight.bold,
+          fontFamily: 'Nunito',
+          fontWeight: FontWeight.w800, // Extra bold for emphasis
           color: primary,
           fontSize: 48.0, // tuned for standard screens
-          shadows: [
-            Shadow(
-              color: Colors.black.withOpacity(0.2),
-              blurRadius: 6,
-              offset: const Offset(0, 2),
-            ),
-          ],
         ) ??
         const TextStyle();
   }

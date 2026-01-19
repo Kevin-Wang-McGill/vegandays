@@ -176,30 +176,27 @@ class _MainScreenState extends State<MainScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: SizedBox(
-        height: 64.0, // Reduced from default ~80px, but still >= 48dp per tab
-        child: NavigationBar(
-          selectedIndex: _currentIndex,
-          onDestinationSelected: (index) {
-            setState(() {
-              _currentIndex = index;
-            });
-          },
-          height: 64.0, // Explicit height
-          destinations: [
-            NavigationDestination(
-              icon: Icon(Icons.home_outlined, size: 22.0), // Reduced from default 24
-              selectedIcon: Icon(Icons.home, size: 22.0),
-              label: 'Home',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.settings_outlined, size: 22.0),
-              selectedIcon: Icon(Icons.settings, size: 22.0),
-              label: 'Settings',
-            ),
-          ],
-          labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-        ),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _currentIndex,
+        onDestinationSelected: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+        height: 60.0,
+        labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+        destinations: [
+          NavigationDestination(
+            icon: Icon(Icons.home_outlined, size: 24.0),
+            selectedIcon: Icon(Icons.home, size: 24.0),
+            label: 'Home',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.settings_outlined, size: 24.0),
+            selectedIcon: Icon(Icons.settings, size: 24.0),
+            label: 'Settings',
+          ),
+        ],
       ),
     );
   }

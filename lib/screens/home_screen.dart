@@ -43,8 +43,8 @@ class _HomeScreenState extends State<HomeScreen> {
         // Header block height (estimated: header text + spacing + beans pill area)
         const headerBlockHeight = 130.0; // 120-140 range, tuned for standard screens
     
-        // Bottom navigation bar height (reduced compact NavigationBar)
-        const tabBarHeight = 64.0; // Reduced from 80.0 for lighter feel
+        // Bottom navigation bar height (compact NavigationBar + safe area)
+        const tabBarHeight = 60.0; // Match NavigationBar height in main.dart
         final checkInButtonHeight = sizing.buttonHeight;
         final buttonSpacing = 16.0; // Spacing between button and tab bar
     

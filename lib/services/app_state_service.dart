@@ -83,14 +83,11 @@ class AppStateService extends ChangeNotifier {
     final todayMidnight = _getTodayMidnight();
     final impactedDays = _calculateImpactedDays(startMidnight, todayMidnight);
 
-    // daily beans/day = grams/day + vegan bonus (20 beans/day if vegan)
-    final dailyBeans = _dailyMeatSavedGrams + (_dietType == DietType.vegan ? 20 : 0);
-
     _state = AppState(
       startDate: startMidnight,
       impactedDays: impactedDays,
-      beans: impactedDays * dailyBeans,
-      lastCheckInDate: null,
+      beans: 0, // Will be calculated by recomputeImpactAndBalances
+      lastCheckInDate: null, // User must manually check in to get today's beans
       animalCounts: {
         AnimalType.cow: 0,
         AnimalType.sheep: 0,
@@ -294,7 +291,8 @@ class AppStateService extends ChangeNotifier {
 
   /// Unified recompute entry when startDate or grams/day changes.
   /// - impactedDays = dateDiffInDays(startDate, today) + 1 (local midnight, clamp >= 1)
-  /// - earnedBeans = impactedDays * dailyBeansPerDay (always == grams/day)
+  /// - earnedBeans = checkedInDays * dailyBeansPerDay
+  ///   - checkedInDays = impactedDays - 1 if today not checked in, else impactedDays
   /// - spentBeans = Σ(count[type] * cost[type])
   /// - beansBalance = max(0, earnedBeans - spentBeans)
   Future<void> recomputeImpactAndBalances() async {
@@ -308,8 +306,16 @@ class AppStateService extends ChangeNotifier {
     final todayMidnight = _getTodayMidnight();
     final impactedDays = _calculateImpactedDays(startMidnight, todayMidnight);
 
+    // Check if today is already checked in
+    final todayStr = _getTodayString();
+    final todayCheckedIn = _state.lastCheckInDate == todayStr;
+    
+    // Beans are only earned for days that have been checked in
+    // If today not checked in yet, we don't count today's beans
+    final checkedInDays = todayCheckedIn ? impactedDays : max(0, impactedDays - 1);
+
     final totalSpentBeans = _calculateTotalSpentBeans(_state.animalCounts);
-    final totalEarnedBeans = impactedDays * dailyBeansPerDay;
+    final totalEarnedBeans = checkedInDays * dailyBeansPerDay;
     final beansBalance = max(0, totalEarnedBeans - totalSpentBeans);
 
     _state = _state.copyWith(
