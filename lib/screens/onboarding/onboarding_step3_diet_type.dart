@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../models/diet_type.dart';
 import 'onboarding_theme.dart';
+import '../../theme/responsive_sizing.dart'; // iPad responsive fix
 
 /// Step 3: Diet type selection
 class OnboardingStep3DietType extends StatefulWidget {
@@ -40,14 +41,20 @@ class _OnboardingStep3DietTypeState extends State<OnboardingStep3DietType> {
 
   @override
   Widget build(BuildContext context) {
+    // iPad responsive fix: add responsive sizing
+    final sizing = ResponsiveSizing(context);
+    
     return LayoutBuilder(
       builder: (context, constraints) {
         final viewportHeight = constraints.maxHeight;
         return SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
-          child: ConstrainedBox(
+          padding: EdgeInsets.all(sizing.screenPadding), // iPad responsive fix
+          // iPad responsive fix: center and constrain content
+          child: Center(
+            child: ConstrainedBox(
             constraints: BoxConstraints(
-              minHeight: viewportHeight > 0 ? viewportHeight - 48 : 0,
+              minHeight: viewportHeight > 0 ? viewportHeight - sizing.screenPadding * 2 : 0,
+              maxWidth: sizing.maxContentWidth, // iPad responsive fix
             ),
             child: IntrinsicHeight(
               child: Column(
@@ -55,30 +62,32 @@ class _OnboardingStep3DietTypeState extends State<OnboardingStep3DietType> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const SizedBox(height: 40),
-                  const Icon(
+                  SizedBox(height: sizing.spacingXXL), // iPad responsive fix
+                  Icon(
                     Icons.restaurant_menu,
-                    size: 80,
+                    size: sizing.largeIconSize, // iPad responsive fix
                     color: OnboardingTheme.primaryGreen,
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: sizing.spacingXXL), // iPad responsive fix
                   Text(
                     'What\'s your diet type?',
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: OnboardingTheme.textPrimary,
+                          fontSize: sizing.isTablet ? 32 : null, // iPad responsive fix
                         ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: sizing.spacingL), // iPad responsive fix
                   Text(
                     'Select your plant-based diet preference',
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                           color: OnboardingTheme.textSecondary,
+                          fontSize: sizing.isTablet ? 18 : null, // iPad responsive fix
                         ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 32),
+                  SizedBox(height: sizing.spacingXXL), // iPad responsive fix
                   _buildDietTypeOption(
                     context,
                     DietType.vegetarian,
@@ -86,8 +95,9 @@ class _OnboardingStep3DietTypeState extends State<OnboardingStep3DietType> {
                     'No meat, but may include eggs and dairy',
                     Icons.eco,
                     null,
+                    sizing, // iPad responsive fix
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: sizing.spacingL), // iPad responsive fix
                   _buildDietTypeOption(
                     context,
                     DietType.vegan,
@@ -95,8 +105,9 @@ class _OnboardingStep3DietTypeState extends State<OnboardingStep3DietType> {
                     'No animal products at all',
                     Icons.eco,
                     '+20 beans/day bonus',
+                    sizing, // iPad responsive fix
                   ),
-                  const SizedBox(height: 60),
+                  const Spacer(), // iPad responsive fix
                   Row(
                     children: [
                       Expanded(
@@ -108,21 +119,21 @@ class _OnboardingStep3DietTypeState extends State<OnboardingStep3DietType> {
                               color: OnboardingTheme.divider,
                               width: 1,
                             ),
-                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            padding: EdgeInsets.symmetric(vertical: sizing.isTablet ? 20 : 16), // iPad responsive fix
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(32),
                             ),
                           ),
-                          child: const Text(
+                          child: Text(
                             'Back',
                             style: TextStyle(
-                              fontSize: 16,
+                              fontSize: sizing.isTablet ? 18 : 16, // iPad responsive fix
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
                       ),
-                      const SizedBox(width: 16),
+                      SizedBox(width: sizing.spacingL), // iPad responsive fix
                       Expanded(
                         child: FilledButton(
                           onPressed: _selectedDietType != null ? widget.onContinue : null,
@@ -131,7 +142,7 @@ class _OnboardingStep3DietTypeState extends State<OnboardingStep3DietType> {
                             foregroundColor: OnboardingTheme.white,
                             disabledBackgroundColor: OnboardingTheme.disabledBackground,
                             disabledForegroundColor: OnboardingTheme.disabledText,
-                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            padding: EdgeInsets.symmetric(vertical: sizing.isTablet ? 20 : 16), // iPad responsive fix
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(32),
                             ),
@@ -146,10 +157,10 @@ class _OnboardingStep3DietTypeState extends State<OnboardingStep3DietType> {
                               return null;
                             }),
                           ),
-                          child: const Text(
+                          child: Text(
                             'Complete',
                             style: TextStyle(
-                              fontSize: 16,
+                              fontSize: sizing.isTablet ? 18 : 16, // iPad responsive fix
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -157,11 +168,12 @@ class _OnboardingStep3DietTypeState extends State<OnboardingStep3DietType> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: sizing.spacingL), // iPad responsive fix
                 ],
               ),
             ),
-          ),
+            ), // iPad responsive fix: close ConstrainedBox
+          ), // iPad responsive fix: close Center
         );
       },
     );
@@ -174,6 +186,7 @@ class _OnboardingStep3DietTypeState extends State<OnboardingStep3DietType> {
     String description,
     IconData icon,
     String? bonusText,
+    ResponsiveSizing sizing, // iPad responsive fix
   ) {
     final isSelected = _selectedDietType == type;
     

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'onboarding_theme.dart';
+import '../../theme/responsive_sizing.dart'; // iPad responsive fix
 
 /// Step 1: Start Date selection
 class OnboardingStep1StartDate extends StatefulWidget {
@@ -53,45 +54,53 @@ class _OnboardingStep1StartDateState extends State<OnboardingStep1StartDate> {
 
   @override
   Widget build(BuildContext context) {
+    // iPad responsive fix: add responsive sizing
+    final sizing = ResponsiveSizing(context);
+    
     return LayoutBuilder(
       builder: (context, constraints) {
         final viewportHeight = constraints.maxHeight;
         return SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              minHeight: viewportHeight > 0 ? viewportHeight - 48 : 0,
-            ),
+          padding: EdgeInsets.all(sizing.screenPadding), // iPad responsive fix
+          // iPad responsive fix: center and constrain content on tablets
+          child: Center(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: viewportHeight > 0 ? viewportHeight - sizing.screenPadding * 2 : 0,
+                maxWidth: sizing.maxContentWidth, // iPad responsive fix
+              ),
             child: IntrinsicHeight(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const SizedBox(height: 40),
-                  const Icon(
+                  SizedBox(height: sizing.spacingXXL), // iPad responsive fix
+                  Icon(
                     Icons.eco,
-                    size: 80,
+                    size: sizing.largeIconSize, // iPad responsive fix
                     color: OnboardingTheme.primaryGreen,
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: sizing.spacingXXL), // iPad responsive fix
                   Text(
                     'Welcome to Vegan Days',
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: OnboardingTheme.textPrimary,
+                          fontSize: sizing.isTablet ? 32 : null, // iPad responsive fix
                         ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: sizing.spacingL), // iPad responsive fix
                   Text(
                     'When did you start your plant-based journey?',
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                           color: OnboardingTheme.textSecondary,
+                          fontSize: sizing.isTablet ? 18 : null, // iPad responsive fix
                         ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 32),
+                  SizedBox(height: sizing.spacingXXL), // iPad responsive fix
                   Card(
                     child: InkWell(
                       onTap: () => _selectDate(context),
@@ -135,13 +144,13 @@ class _OnboardingStep1StartDateState extends State<OnboardingStep1StartDate> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 60),
+                  const Spacer(), // iPad responsive fix: push button to bottom
                   FilledButton(
                     onPressed: widget.onContinue,
                     style: FilledButton.styleFrom(
                       backgroundColor: OnboardingTheme.primaryGreen,
                       foregroundColor: OnboardingTheme.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      padding: EdgeInsets.symmetric(vertical: sizing.isTablet ? 20 : 16), // iPad responsive fix
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(32),
                       ),
@@ -156,19 +165,20 @@ class _OnboardingStep1StartDateState extends State<OnboardingStep1StartDate> {
                         return null;
                       }),
                     ),
-                    child: const Text(
+                    child: Text(
                       'Continue',
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: sizing.isTablet ? 18 : 16, // iPad responsive fix
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: sizing.spacingL), // iPad responsive fix
                 ],
               ),
             ),
-          ),
+            ), // iPad responsive fix: close ConstrainedBox
+          ), // iPad responsive fix: close Center
         );
       },
     );

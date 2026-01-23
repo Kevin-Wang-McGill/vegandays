@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/responsive_sizing.dart'; // iPad responsive fix
 
 class SplashScreen extends StatefulWidget {
   final VoidCallback onComplete;
@@ -61,6 +62,11 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
+    // iPad responsive fix: add responsive sizing
+    final sizing = ResponsiveSizing(context);
+    final iconSize = sizing.splashIconSize;
+    final fontSize = sizing.isTablet ? 32.0 : 24.0;
+    
     return Scaffold(
       backgroundColor: Colors.white,
       body: FadeTransition(
@@ -69,29 +75,29 @@ class _SplashScreenState extends State<SplashScreen>
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // App Icon
+              // App Icon - iPad responsive fix: dynamic size
               Image.asset(
                 'assets/APP_Icon.png',
-                width: 112,
-                height: 112,
+                width: iconSize,
+                height: iconSize,
                 fit: BoxFit.contain,
                 errorBuilder: (context, error, stackTrace) {
                   debugPrint('Error loading APP_Icon.png: $error');
                   return Container(
-                    width: 112,
-                    height: 112,
+                    width: iconSize,
+                    height: iconSize,
                     color: Colors.grey[200],
-                    child: const Icon(Icons.error, size: 48),
+                    child: Icon(Icons.error, size: iconSize * 0.4),
                   );
                 },
               ),
-              const SizedBox(height: 20),
-              // App Name
+              SizedBox(height: sizing.spacingXL), // iPad responsive fix
+              // App Name - iPad responsive fix: dynamic font size
               Text(
                 'Vegan Days',
                 style: TextStyle(
                   fontFamily: 'Nunito',
-                  fontSize: 24,
+                  fontSize: fontSize,
                   fontWeight: FontWeight.w900, // Extra bold
                   color: const Color(0xFF533D2D),
                   letterSpacing: 0.4,

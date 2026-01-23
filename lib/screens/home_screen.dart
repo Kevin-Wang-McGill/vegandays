@@ -40,13 +40,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
         // Calculate scene area (Sanctuary scene visible area)
         // Note: All coordinates are relative to SafeArea + padding Stack
-        // Header block height (estimated: header text + spacing + beans pill area)
-        const headerBlockHeight = 130.0; // 120-140 range, tuned for standard screens
+        // iPad responsive fix: dynamic header height based on device
+        final headerBlockHeight = sizing.isTablet ? 160.0 : 130.0;
     
-        // Bottom navigation bar height (compact NavigationBar + safe area)
-        const tabBarHeight = 60.0; // Match NavigationBar height in main.dart
+        // iPad responsive fix: dynamic tab bar height
+        final tabBarHeight = sizing.isTablet ? 72.0 : 60.0;
         final checkInButtonHeight = sizing.buttonHeight;
-        final buttonSpacing = 16.0; // Spacing between button and tab bar
+        final buttonSpacing = sizing.spacingL; // iPad responsive fix: use responsive spacing
     
         // Stack height: available height after SafeArea and padding
         // Stack is inside SafeArea > Padding, so:
@@ -127,16 +127,22 @@ class _HomeScreenState extends State<HomeScreen> {
                         sceneCenterY: sceneCenterY,
                       ),
                       // 底部 Check in 按钮和动物数量提示
+                      // iPad responsive fix: use responsive bottom spacing
                       Positioned(
                         left: 0,
                         right: 0,
-                        bottom: 10.0, // Increased bottom inset by 10px (8-14px range)
+                        bottom: sizing.spacingM, // iPad responsive fix: responsive bottom inset
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            // Check in 按钮
-                            SizedBox(
+                            // Check in 按钮 - iPad responsive fix: constrain width on tablets
+                            Center(
+                              child: ConstrainedBox(
+                                constraints: BoxConstraints(
+                                  maxWidth: sizing.maxContentWidth,
+                                ),
+                                child: SizedBox(
                               width: double.infinity,
                               height: sizing.buttonHeight,
                               child: FilledButton(
@@ -154,19 +160,21 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                                 child: Text(
                                   canCheckIn ? 'Check in' : 'You showed up today',
-                                  style: const TextStyle(
-                                    fontSize: 16,
+                                  style: TextStyle(
+                                    fontSize: sizing.isTablet ? 18 : 16, // iPad responsive fix
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                               ),
                             ),
+                              ), // iPad responsive fix: close ConstrainedBox
+                            ), // iPad responsive fix: close Center
                             // 动物数量提示
-                            SizedBox(height: 9.0), // 8-10px spacing below button
+                            SizedBox(height: sizing.spacingS), // iPad responsive fix: responsive spacing
                             Text(
                               'You have saved ${state.animalCounts.values.fold<int>(0, (a, b) => a + b)} animals.',
                               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    fontSize: 13.5, // ~13-14 range
+                                    fontSize: sizing.isTablet ? 20.0 : 15.0, // iPad: larger font
                                     fontWeight: FontWeight.w600,
                                     color: DesignTokens.foreground.withOpacity(0.9),
                                     height: 1.2,
@@ -319,7 +327,11 @@ class _HomeScreenState extends State<HomeScreen> {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
-      builder: (context) => Container(
+      // iPad responsive fix: constrain bottom sheet width on tablets
+      builder: (context) => Center(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: sizing.maxContentWidth),
+          child: Container(
         decoration: BoxDecoration(
           color: DesignTokens.card,
           borderRadius: BorderRadius.only(
@@ -331,19 +343,21 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            // iPad responsive fix: responsive drag indicator size
             Container(
-              width: 40,
-              height: 4,
+              width: sizing.isTablet ? 56 : 40,
+              height: sizing.isTablet ? 5 : 4,
               decoration: BoxDecoration(
                 color: DesignTokens.border,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
             SizedBox(height: sizing.spacingXXL),
+            // iPad responsive fix: responsive animal image size
             Image.asset(
               animalType.assetPath,
-              width: 64,
-              height: 64,
+              width: sizing.isTablet ? 96 : 64,
+              height: sizing.isTablet ? 96 : 64,
               fit: BoxFit.contain,
             ),
             SizedBox(height: sizing.spacingL),
@@ -445,17 +459,18 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             // Source explanation text
+            // iPad responsive fix: allow more lines for source text
             Padding(
               padding: EdgeInsets.only(bottom: sizing.spacingM),
               child: Text(
                 'Based on ${animalType.yieldSource}, one ${animalType.name.toLowerCase()} yields about ${formatCostDetailed(animalType.cost)} g edible meat = ${formatCostDetailed(animalType.cost)} beans.',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: DesignTokens.mutedText.withOpacity(0.85),
-                      fontSize: 11,
+                      fontSize: sizing.isTablet ? 13 : 11, // iPad responsive fix
                       height: 1.4,
                     ),
                 textAlign: TextAlign.center,
-                maxLines: 2,
+                maxLines: 3, // iPad responsive fix: allow more lines
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -473,10 +488,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     borderRadius: BorderRadius.circular(DesignTokens.radiusPill),
                   ),
                 ),
-                child: const Text(
+                child: Text(
                   'Bring home',
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: sizing.isTablet ? 18 : 16, // iPad responsive fix
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -484,7 +499,9 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
-      ),
+          ), // iPad responsive fix: close Container
+        ), // iPad responsive fix: close ConstrainedBox
+      ), // iPad responsive fix: close Center
     );
   }
 

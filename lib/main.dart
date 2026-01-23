@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart'; // iPad debug
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/splash_screen.dart';
@@ -6,6 +7,12 @@ import 'screens/home_screen.dart';
 import 'screens/settings_screen.dart';
 import 'services/app_state_service.dart';
 import 'constants/prefs_keys.dart';
+import 'theme/breakpoints.dart'; // iPad responsive fix
+import 'widgets/debug_device_preview.dart'; // iPad debug
+
+/// Set to true to enable Device Preview mode (debug only)
+/// This wraps the app in a device simulator for testing different screen sizes
+const bool kEnableDevicePreview = false;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -94,7 +101,10 @@ class MyApp extends StatelessWidget {
           }),
         ),
       ),
-      home: const MainScreen(),
+      // iPad debug: optionally wrap in device preview for testing
+      home: kDebugMode && kEnableDevicePreview
+          ? const DebugDevicePreview(child: MainScreen())
+          : const MainScreen(),
     );
   }
 }
@@ -176,27 +186,36 @@ class _MainScreenState extends State<MainScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _currentIndex,
-        onDestinationSelected: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
+      // iPad responsive fix: dynamic navigation bar height
+      bottomNavigationBar: Builder(
+        builder: (context) {
+          final isTablet = Breakpoints.isTablet(context);
+          final navHeight = isTablet ? 72.0 : 60.0;
+          final iconSize = isTablet ? 28.0 : 24.0;
+          
+          return NavigationBar(
+            selectedIndex: _currentIndex,
+            onDestinationSelected: (index) {
+              setState(() {
+                _currentIndex = index;
+              });
+            },
+            height: navHeight, // iPad responsive fix
+            labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+            destinations: [
+              NavigationDestination(
+                icon: Icon(Icons.home_outlined, size: iconSize),
+                selectedIcon: Icon(Icons.home, size: iconSize),
+                label: 'Home',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.settings_outlined, size: iconSize),
+                selectedIcon: Icon(Icons.settings, size: iconSize),
+                label: 'Settings',
+              ),
+            ],
+          );
         },
-        height: 60.0,
-        labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-        destinations: [
-          NavigationDestination(
-            icon: Icon(Icons.home_outlined, size: 24.0),
-            selectedIcon: Icon(Icons.home, size: 24.0),
-            label: 'Home',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.settings_outlined, size: 24.0),
-            selectedIcon: Icon(Icons.settings, size: 24.0),
-            label: 'Settings',
-          ),
-        ],
       ),
     );
   }

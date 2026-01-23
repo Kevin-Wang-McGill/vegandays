@@ -445,10 +445,12 @@ class _SanctuarySceneState extends State<SanctuaryScene>
                 treeAssetPath: SanctuaryAssets.tree01,
               ),
 
-              // H. Pond
+              // H. Pond - iPad responsive fix: use relative positioning
+              // Original: left: 230, bottom: 280 on 390x844 screen
+              // Ratio: left = 230/390 ≈ 0.59, bottom = 280/844 ≈ 0.33
               Positioned(
-                left: 230,
-                bottom: 280,
+                left: 0.59 * w, // iPad responsive fix: correct ratio from original 230px
+                bottom: 0.33 * h, // iPad responsive fix: correct ratio from original 280px
                 child: Image.asset(
                   SanctuaryAssets.pond01,
                   width: pondW,
@@ -469,13 +471,18 @@ class _SanctuarySceneState extends State<SanctuaryScene>
                     const shadowWidthRatio = 0.6;
                     final shadowW = iconW * shadowWidthRatio;
                     final shadowH = iconW * 0.12;
+                    
+                    // iPad responsive fix: extra upward offset for icon shadow
+                    final shortestSide = MediaQuery.of(context).size.shortestSide;
+                    final isTablet = shortestSide >= 600;
+                    final iconShadowOffset = isTablet ? -38.0 : -18.0; // -18 base, -20 extra on iPad
 
                     return Stack(
                       alignment: Alignment.bottomCenter,
                       clipBehavior: Clip.none,
                       children: [
                         Transform.translate(
-                          offset: const Offset(0, -18),
+                          offset: Offset(0, iconShadowOffset),
                           child: IgnorePointer(
                             child: SizedBox(
                               width: shadowW,
@@ -619,8 +626,8 @@ class _SanctuarySceneState extends State<SanctuaryScene>
     );
   }
 
-  /// Build a speech bubble widget
-  Widget _buildBubbleWidget(BubbleEvent bubble, Offset animalPos, double animalWidth, bool facingRight) {
+  /// Build a speech bubble widget - iPad responsive fix: added screenWidth parameter
+  Widget _buildBubbleWidget(BubbleEvent bubble, Offset animalPos, double animalWidth, bool facingRight, double screenWidth) {
     final progress = bubble.getProgress(_nowSec);
     
     // Fade in/out animation
@@ -656,9 +663,9 @@ class _SanctuarySceneState extends State<SanctuaryScene>
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: facingRight ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           children: [
-            // 气泡主体
+            // 气泡主体 - iPad responsive fix: dynamic max width
             Container(
-              constraints: const BoxConstraints(maxWidth: 120),
+              constraints: BoxConstraints(maxWidth: screenWidth * 0.3 > 120 ? screenWidth * 0.15 : 120), // iPad responsive fix
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
               decoration: BoxDecoration(
                 color: Colors.white.withOpacity(0.95),
@@ -706,6 +713,10 @@ class _SanctuarySceneState extends State<SanctuaryScene>
     if (!_wanderSystem.isInitialized) return [];
 
     final baseAnimalWidth = 0.18 * screenWidth;
+    
+    // iPad responsive fix: detect tablet for shadow offset adjustment
+    final shortestSide = MediaQuery.of(context).size.shortestSide;
+    final isTablet = shortestSide >= 600;
 
     // Sort by bottom Y position (pos.dy + animalHeight): animals with feet lower on screen render on top
     // This creates proper 2.5D depth effect based on where animals "stand"
@@ -727,7 +738,19 @@ class _SanctuarySceneState extends State<SanctuaryScene>
       // Calculate shadow position (centered below animal feet)
       // Animal pos is top-left, shadow should be at bottom-center
       final shadowLeft = state.pos.dx + (animalWidth - shadowWidth) / 2;
-      final shadowTop = state.pos.dy + animalWidth - shadowHeight + shadowSpec.offsetY - shadowSpec.upwardOffset;
+      
+      // iPad responsive fix: per-animal tablet shadow offset
+      final typeId = state.config.id.contains('_') ? state.config.id.split('_').first : state.config.id;
+      double tabletShadowOffset = 0.0;
+      if (isTablet) {
+        switch (typeId) {
+          case 'cow': tabletShadowOffset = 20.0; break;
+          case 'pig': tabletShadowOffset = 15.0; break;
+          case 'sheep': tabletShadowOffset = 8.0; break;
+          case 'chicken': tabletShadowOffset = 2.0; break;
+        }
+      }
+      final shadowTop = state.pos.dy + animalWidth - shadowHeight + shadowSpec.offsetY - shadowSpec.upwardOffset - tabletShadowOffset;
 
       // Check if this is an initial animal (loaded on restart)
       final isInitialAnimal = _initialAnimalIds.contains(state.config.id);

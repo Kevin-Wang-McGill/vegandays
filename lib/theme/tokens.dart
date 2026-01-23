@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 
 /// Design tokens for the app
 class DesignTokens {
+  // iPad detection helper
+  static bool _isTablet(BuildContext context) {
+    return MediaQuery.of(context).size.shortestSide >= 600;
+  }
   // Colors
   static const Color background = Color(0xFFF1F6F9);
   static const Color card = Color(0xFFFAF8F4);
@@ -65,12 +69,13 @@ class DesignTokens {
   // Screen padding (standard screens)
   static const double screenPadding = 20.0;
 
-  // Typography (tuned for standard screens)
+  // Typography (responsive for phone and iPad)
   static TextStyle headerSmallTextStyle(BuildContext context) {
+    final tablet = _isTablet(context);
     return Theme.of(context).textTheme.bodySmall?.copyWith(
           color: foreground,
           fontWeight: FontWeight.w600, // semi-bold
-          fontSize: 13.0, // tuned for standard screens
+          fontSize: tablet ? 20.0 : 15.0, // iPad: larger font
           shadows: [
             Shadow(
               color: Colors.white.withOpacity(0.8),
@@ -88,37 +93,41 @@ class DesignTokens {
   }
 
   static TextStyle headerBigNumberStyle(BuildContext context) {
+    final tablet = _isTablet(context);
     return Theme.of(context).textTheme.displaySmall?.copyWith(
           fontFamily: 'Nunito',
           fontWeight: FontWeight.w800, // Extra bold for emphasis
           color: primary,
-          fontSize: 48.0, // tuned for standard screens
+          fontSize: tablet ? 64.0 : 48.0, // iPad: larger font
         ) ??
         const TextStyle();
   }
 
   static TextStyle panelTitleStyle(BuildContext context) {
+    final tablet = _isTablet(context);
     return Theme.of(context).textTheme.titleLarge?.copyWith(
           fontWeight: FontWeight.bold,
           color: foreground,
-          fontSize: 20.0, // tuned for standard screens
+          fontSize: tablet ? 26.0 : 20.0, // iPad: larger font
         ) ??
         const TextStyle();
   }
 
   static TextStyle animalCardTitleStyle(BuildContext context) {
+    final tablet = _isTablet(context);
     return Theme.of(context).textTheme.titleMedium?.copyWith(
           fontWeight: FontWeight.bold,
           color: foreground,
-          fontSize: 16.0, // tuned for standard screens
+          fontSize: tablet ? 20.0 : 16.0, // iPad: larger font
         ) ??
         const TextStyle();
   }
 
   static TextStyle animalCardCostStyle(BuildContext context) {
+    final tablet = _isTablet(context);
     return Theme.of(context).textTheme.bodySmall?.copyWith(
           color: mutedText,
-          fontSize: 13.0, // tuned for standard screens
+          fontSize: tablet ? 16.0 : 13.0, // iPad: larger font
         ) ??
         const TextStyle();
   }

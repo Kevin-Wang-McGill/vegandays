@@ -1,30 +1,41 @@
-// This is a basic Flutter widget test.
+// Basic widget tests for Vegan Days app
 //
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
+// Run with: flutter test
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:vegan_impact/main.dart';
+import 'package:vegan_days/main.dart';
+import 'package:vegan_days/services/app_state_service.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
+  setUpAll(() async {
+    // Initialize SharedPreferences mock
+    SharedPreferences.setMockInitialValues({
+      'start_date': '2024-01-01',
+      'onboarding_completed': true,
+      'diet_type': 'vegetarian',
+      'daily_meat_saved_grams': 282,
+    });
+    await AppStateService.instance.initialize();
+  });
+
+  testWidgets('App launches without errors', (WidgetTester tester) async {
     await tester.pumpWidget(const MyApp());
+    await tester.pumpAndSettle();
+    
+    // App should launch without throwing exceptions
+    expect(tester.takeException(), isNull);
+  });
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
-
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+  testWidgets('App shows splash screen initially', (WidgetTester tester) async {
+    await tester.pumpWidget(const MyApp());
+    
+    // Splash screen should show app name
+    expect(find.text('Vegan Days'), findsOneWidget);
+    
+    // Allow pending timers to complete (splash animation)
+    await tester.pump(const Duration(seconds: 2));
   });
 }

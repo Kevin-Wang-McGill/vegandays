@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../onboarding_theme.dart';
+import '../../../theme/responsive_sizing.dart'; // iPad responsive fix
 
 /// Animated progress bar with celebration effect for Onboarding
 class OnboardingProgressBar extends StatefulWidget {
@@ -111,8 +112,15 @@ class _OnboardingProgressBarState extends State<OnboardingProgressBar>
 
   @override
   Widget build(BuildContext context) {
+    // iPad responsive fix: add responsive sizing
+    final sizing = ResponsiveSizing(context);
+    final barHeight = sizing.isTablet ? 5.0 : 3.0;
+    
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+      padding: EdgeInsets.symmetric(
+        horizontal: sizing.screenPadding, // iPad responsive fix
+        vertical: sizing.spacingL,
+      ),
       child: Column(
         children: [
           Row(
@@ -121,30 +129,30 @@ class _OnboardingProgressBarState extends State<OnboardingProgressBar>
                 '${widget.currentStep}/3',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: OnboardingTheme.textSecondary,
-                      fontSize: 13,
+                      fontSize: sizing.isTablet ? 16 : 13, // iPad responsive fix
                       fontWeight: FontWeight.w500,
                     ),
               ),
               const Spacer(),
             ],
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: sizing.spacingS), // iPad responsive fix
           // Animated progress bar with celebration overlay
           LayoutBuilder(
             builder: (context, constraints) {
               return Stack(
                 clipBehavior: Clip.none,
                 children: [
-                  // Track (background)
+                  // Track (background) - iPad responsive fix: dynamic height
                   ClipRRect(
                     borderRadius: BorderRadius.circular(4),
                     child: Container(
-                      height: 3,
+                      height: barHeight,
                       width: constraints.maxWidth,
                       color: OnboardingTheme.trackGreen,
                     ),
                   ),
-                  // Animated fill
+                  // Animated fill - iPad responsive fix: dynamic height
                   TweenAnimationBuilder<double>(
                     key: ValueKey('progress_${widget.progress}'),
                     tween: Tween(begin: _previousProgress, end: widget.progress),
@@ -158,7 +166,7 @@ class _OnboardingProgressBarState extends State<OnboardingProgressBar>
                       return ClipRRect(
                         borderRadius: BorderRadius.circular(4),
                         child: Container(
-                          height: 3,
+                          height: barHeight, // iPad responsive fix
                           width: constraints.maxWidth * animatedProgress,
                           color: OnboardingTheme.primaryGreen,
                         ),

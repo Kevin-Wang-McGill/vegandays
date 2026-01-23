@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart'; // iPad debug
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -6,6 +7,8 @@ import '../services/app_state_service.dart';
 import '../models/diet_type.dart';
 import '../models/sanctuary_animal.dart';
 import '../theme/tokens.dart';
+import '../theme/responsive_sizing.dart'; // iPad responsive fix
+import '../widgets/debug_device_info.dart'; // iPad debug
 
 class SettingsScreen extends StatefulWidget {
   final VoidCallback? onReset;
@@ -54,11 +57,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
         final totalSpentBeans = _calculateTotalSpentBeans(state.animalCounts);
 
+        // iPad responsive fix: add responsive sizing
+        final sizing = ResponsiveSizing(context);
+        
         return Scaffold(
           backgroundColor: DesignTokens.background,
           body: SafeArea(
-            child: ListView(
-              padding: const EdgeInsets.all(DesignTokens.screenPadding),
+            // iPad responsive fix: center content and constrain width on tablets
+            child: Center(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: sizing.maxContentWidth),
+                child: ListView(
+              padding: EdgeInsets.all(sizing.screenPadding), // iPad responsive fix
               children: [
                 Text(
                   'Settings',
@@ -66,9 +76,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         fontWeight: FontWeight.w800,
                         color: DesignTokens.foreground,
                         letterSpacing: -0.4,
+                        fontSize: sizing.isTablet ? 32 : null, // iPad responsive fix
                       ),
                 ),
-                const SizedBox(height: DesignTokens.spacingXXL),
+                SizedBox(height: sizing.spacingXXL), // iPad responsive fix
 
                 // 1) Profile
                 _SectionCard(
@@ -90,9 +101,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               );
                             },
                             borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                            // iPad responsive fix: larger profile image on tablets
                             child: Container(
-                              width: 128,
-                              height: 128,
+                              width: sizing.isTablet ? 160 : 128,
+                              height: sizing.isTablet ? 160 : 128,
                               decoration: BoxDecoration(
                                 color: DesignTokens.secondary.withOpacity(0.65),
                                 borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
@@ -117,6 +129,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
                                         fontWeight: FontWeight.w700,
                                         color: DesignTokens.foreground,
+                                        fontSize: sizing.titleSmallFontSize, // iPad responsive
                                       ),
                                 ),
                                 const SizedBox(height: DesignTokens.spacingS),
@@ -189,6 +202,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(
                               fontWeight: FontWeight.w700,
                               color: DesignTokens.foreground,
+                              fontSize: sizing.titleSmallFontSize, // iPad responsive
                             ),
                       ),
                       const SizedBox(height: DesignTokens.spacingS),
@@ -225,6 +239,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                               color: DesignTokens.mutedText,
                               height: 1.35,
+                              fontSize: sizing.bodySmallFontSize, // iPad responsive
                             ),
                       ),
                     ],
@@ -244,6 +259,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               color: DesignTokens.mutedText,
                               height: 1.5,
+                              fontSize: sizing.bodyMediumFontSize, // iPad responsive
                             ),
                       ),
                       const SizedBox(height: DesignTokens.spacingL),
@@ -252,6 +268,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(
                               fontWeight: FontWeight.w700,
                               color: DesignTokens.foreground,
+                              fontSize: sizing.titleSmallFontSize, // iPad responsive
                             ),
                       ),
                       const SizedBox(height: DesignTokens.spacingS),
@@ -261,6 +278,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                               color: DesignTokens.mutedText,
                               height: 1.4,
+                              fontSize: sizing.bodySmallFontSize, // iPad responsive
                             ),
                       ),
                     ],
@@ -280,6 +298,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(
                               fontWeight: FontWeight.w700,
                               color: DesignTokens.foreground,
+                              fontSize: sizing.titleSmallFontSize, // iPad responsive
                             ),
                       ),
                       const SizedBox(height: DesignTokens.spacingS),
@@ -373,6 +392,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                         color: DesignTokens.foreground,
                                         height: 1.4,
                                         fontWeight: FontWeight.w500,
+                                        fontSize: sizing.bodySmallFontSize, // iPad responsive
                                       ),
                                 ),
                               ),
@@ -396,6 +416,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               style: Theme.of(context).textTheme.titleSmall?.copyWith(
                                     fontWeight: FontWeight.w700,
                                     color: DesignTokens.foreground,
+                                    fontSize: sizing.titleSmallFontSize, // iPad responsive
                                   ),
                             ),
                             const SizedBox(height: 6),
@@ -404,6 +425,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                     color: DesignTokens.mutedText,
                                     height: 1.4,
+                                    fontSize: sizing.bodySmallFontSize, // iPad responsive
                                   ),
                             ),
                             const SizedBox(height: 12),
@@ -445,6 +467,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(
                               fontWeight: FontWeight.w700,
                               color: DesignTokens.foreground,
+                              fontSize: sizing.titleSmallFontSize, // iPad responsive
                             ),
                       ),
                       subtitle: Text(
@@ -452,6 +475,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                               color: DesignTokens.mutedText,
                               height: 1.25,
+                              fontSize: sizing.bodySmallFontSize, // iPad responsive
                             ),
                       ),
                       children: [
@@ -492,6 +516,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                               color: DesignTokens.mutedText,
                               height: 1.4,
+                              fontSize: sizing.bodySmallFontSize, // iPad responsive
                             ),
                       ),
                       const SizedBox(height: DesignTokens.spacingL),
@@ -527,6 +552,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                               color: DesignTokens.mutedText,
                               height: 1.4,
+                              fontSize: sizing.bodySmallFontSize, // iPad responsive
                             ),
                       ),
                       const SizedBox(height: DesignTokens.spacingL),
@@ -577,7 +603,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         subtitle: _supportEmail,
                         onTap: () => _launchSupportEmail(),
                       ),
-                      const SizedBox(height: DesignTokens.spacingL),
+                      SizedBox(height: sizing.spacingL), // iPad responsive fix
                       // Privacy statement
                       Text(
                         'We do not collect or track personal data.',
@@ -585,14 +611,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               color: DesignTokens.mutedText.withOpacity(0.7),
                               fontStyle: FontStyle.italic,
                               height: 1.4,
+                              fontSize: sizing.bodySmallFontSize, // iPad responsive
                             ),
                         textAlign: TextAlign.center,
                       ),
                     ],
                   ),
                 ),
+                
+                // 8) Debug Device Info (only in debug mode)
+                if (kDebugMode) ...[
+                  SizedBox(height: sizing.spacingL),
+                  const DebugDeviceInfo(),
+                ],
               ],
             ),
+              ), // iPad responsive fix: close ConstrainedBox
+            ), // iPad responsive fix: close Center
           ),
         );
       },
@@ -784,6 +819,7 @@ class _SectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final sizing = ResponsiveSizing(context); // iPad responsive
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(
@@ -800,6 +836,7 @@ class _SectionCard extends StatelessWidget {
                     fontWeight: FontWeight.w800,
                     color: DesignTokens.foreground,
                     letterSpacing: -0.2,
+                    fontSize: sizing.titleLargeFontSize, // iPad responsive
                   ),
             ),
             const SizedBox(height: DesignTokens.spacingL),
@@ -824,6 +861,7 @@ class _RowAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final sizing = ResponsiveSizing(context); // iPad responsive
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -842,6 +880,7 @@ class _RowAction extends StatelessWidget {
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
                             fontWeight: FontWeight.w700,
                             color: DesignTokens.foreground,
+                            fontSize: sizing.titleSmallFontSize, // iPad responsive
                           ),
                     ),
                     const SizedBox(height: 4),
@@ -850,13 +889,14 @@ class _RowAction extends StatelessWidget {
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: DesignTokens.mutedText,
                             height: 1.2,
+                            fontSize: sizing.bodySmallFontSize, // iPad responsive
                           ),
                     ),
                   ],
                 ),
               ),
               const SizedBox(width: 8),
-              Icon(Icons.chevron_right, color: DesignTokens.mutedText.withOpacity(0.9)),
+              Icon(Icons.chevron_right, color: DesignTokens.mutedText.withOpacity(0.9), size: sizing.isTablet ? 28 : 24), // iPad responsive
             ],
           ),
         ),
@@ -873,6 +913,7 @@ class _KeyValue extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final sizing = ResponsiveSizing(context); // iPad responsive
     return Padding(
       padding: const EdgeInsets.only(top: 6),
       child: Row(
@@ -883,6 +924,7 @@ class _KeyValue extends StatelessWidget {
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: DesignTokens.mutedText,
                     height: 1.2,
+                    fontSize: sizing.bodySmallFontSize, // iPad responsive
                   ),
             ),
           ),
@@ -892,6 +934,7 @@ class _KeyValue extends StatelessWidget {
                   color: DesignTokens.foreground.withOpacity(0.95),
                   fontWeight: FontWeight.w700,
                   height: 1.2,
+                  fontSize: sizing.bodySmallFontSize, // iPad responsive
                 ),
           ),
         ],
@@ -908,6 +951,7 @@ class _SourceBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final sizing = ResponsiveSizing(context); // iPad responsive
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(14),
@@ -924,6 +968,7 @@ class _SourceBlock extends StatelessWidget {
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.w800,
                   color: DesignTokens.foreground,
+                  fontSize: sizing.titleSmallFontSize, // iPad responsive
                 ),
           ),
           const SizedBox(height: 10),
@@ -938,6 +983,7 @@ class _SourceBlock extends StatelessWidget {
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: DesignTokens.mutedText,
                           height: 1.35,
+                          fontSize: sizing.bodySmallFontSize, // iPad responsive
                         ),
                   ),
                   Expanded(
@@ -946,6 +992,7 @@ class _SourceBlock extends StatelessWidget {
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: DesignTokens.mutedText,
                             height: 1.35,
+                            fontSize: sizing.bodySmallFontSize, // iPad responsive
                           ),
                     ),
                   ),

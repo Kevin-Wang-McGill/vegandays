@@ -6,6 +6,7 @@ import '../../constants/prefs_keys.dart';
 import '../../services/app_state_service.dart';
 import '../../main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../theme/responsive_sizing.dart'; // iPad responsive fix
 
 /// Impact Summary page shown after Onboarding Step3
 /// Displays daily meat saved (grams) and equivalent beans/day
@@ -180,6 +181,9 @@ class _OnboardingImpactSummaryState extends State<OnboardingImpactSummary>
 
   @override
   Widget build(BuildContext context) {
+    // iPad responsive fix: add responsive sizing
+    final sizing = ResponsiveSizing(context);
+    
     return Scaffold(
       backgroundColor: OnboardingTheme.background, // Match Onboarding background
       body: SafeArea(
@@ -187,10 +191,13 @@ class _OnboardingImpactSummaryState extends State<OnboardingImpactSummary>
           builder: (context, constraints) {
             final viewportHeight = constraints.maxHeight;
             return SingleChildScrollView(
-              padding: const EdgeInsets.all(24.0),
-              child: ConstrainedBox(
+              padding: EdgeInsets.all(sizing.screenPadding), // iPad responsive fix
+              // iPad responsive fix: center and constrain content
+              child: Center(
+                child: ConstrainedBox(
                 constraints: BoxConstraints(
-                  minHeight: viewportHeight > 0 ? viewportHeight - 48 : 0,
+                  minHeight: viewportHeight > 0 ? viewportHeight - sizing.screenPadding * 2 : 0,
+                  maxWidth: sizing.maxContentWidth, // iPad responsive fix
                 ),
                 child: IntrinsicHeight(
                   child: Column(
@@ -198,8 +205,8 @@ class _OnboardingImpactSummaryState extends State<OnboardingImpactSummary>
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                  const SizedBox(height: 32),
-                  // Celebration animation: icon with fade + slide (smaller, more compact)
+                  SizedBox(height: sizing.spacingXXL), // iPad responsive fix
+                  // Celebration animation: icon with fade + slide
                   AnimatedBuilder(
                     animation: _celebrationController,
                     builder: (context, child) {
@@ -207,26 +214,27 @@ class _OnboardingImpactSummaryState extends State<OnboardingImpactSummary>
                         opacity: _fadeAnimation.value,
                         child: Transform.translate(
                           offset: Offset(0, -_slideAnimation.value),
-                          child: const Icon(
+                          child: Icon(
                             Icons.eco,
-                            size: 64, // Reduced from 80
+                            size: sizing.isTablet ? 96 : 64, // iPad responsive fix
                             color: OnboardingTheme.primaryGreen,
                           ),
                         ),
                       );
                     },
                   ),
-                  const SizedBox(height: 16), // Reduced from 24
+                  SizedBox(height: sizing.spacingL), // iPad responsive fix
                   Text(
                     'Your Impact',
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.w700, // Slightly bolder but still soft
+                          fontWeight: FontWeight.w700,
                           color: OnboardingTheme.textPrimary,
                           letterSpacing: -0.5,
+                          fontSize: sizing.isTablet ? 36 : null, // iPad responsive fix
                         ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 40), // Increased spacing
+                  SizedBox(height: sizing.spacingXXL * 1.5), // iPad responsive fix
                   // Main content with animated numbers
                   AnimatedBuilder(
                     animation: _celebrationController,
@@ -248,22 +256,22 @@ class _OnboardingImpactSummaryState extends State<OnboardingImpactSummary>
                                     style: Theme.of(context).textTheme.displayLarge?.copyWith(
                                           fontWeight: FontWeight.bold,
                                           color: OnboardingTheme.primaryGreen,
-                                          fontSize: 56,
+                                          fontSize: sizing.isTablet ? 72 : 56, // iPad responsive fix
                                           height: 1.0,
                                         ),
                                   ),
-                                  const SizedBox(width: 4),
+                                  SizedBox(width: sizing.spacingXS), // iPad responsive fix
                                   Text(
                                     'g',
                                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                           color: OnboardingTheme.primaryGreen,
-                                          fontSize: 32,
+                                          fontSize: sizing.isTablet ? 40 : 32, // iPad responsive fix
                                           fontWeight: FontWeight.w500,
                                         ),
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 12),
+                              SizedBox(height: sizing.spacingM), // iPad responsive fix
                               Text(
                                 'of meat per day',
                                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -281,7 +289,7 @@ class _OnboardingImpactSummaryState extends State<OnboardingImpactSummary>
                                     ),
                                 textAlign: TextAlign.center,
                               ),
-                              const SizedBox(height: 28),
+                              SizedBox(height: sizing.spacingXXL), // iPad responsive fix
                               // Equals beans - refined module
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -293,6 +301,7 @@ class _OnboardingImpactSummaryState extends State<OnboardingImpactSummary>
                                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                                           color: OnboardingTheme.textSecondary.withOpacity(0.4),
                                           fontWeight: FontWeight.w300,
+                                          fontSize: sizing.isTablet ? 28 : null, // iPad responsive fix
                                         ),
                                   ),
                                   Text(
@@ -300,7 +309,7 @@ class _OnboardingImpactSummaryState extends State<OnboardingImpactSummary>
                                     style: Theme.of(context).textTheme.displayLarge?.copyWith(
                                           fontWeight: FontWeight.bold,
                                           color: OnboardingTheme.primaryGreen,
-                                          fontSize: 48,
+                                          fontSize: sizing.isTablet ? 64 : 48, // iPad responsive fix
                                           height: 1.0,
                                         ),
                                   ),
@@ -349,35 +358,36 @@ class _OnboardingImpactSummaryState extends State<OnboardingImpactSummary>
                       );
                     },
                   ),
-                  const SizedBox(height: 32),
+                  SizedBox(height: sizing.spacingXXL), // iPad responsive fix
                   Text(
                     'You can customize this later in Settings based on your daily diet.',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: OnboardingTheme.textSecondary.withOpacity(0.75),
                           height: 1.5,
+                          fontSize: sizing.isTablet ? 18 : null, // iPad responsive fix
                         ),
                     textAlign: TextAlign.center,
                   ),
                   const Spacer(),
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 14.0),
+                    padding: EdgeInsets.only(bottom: sizing.spacingM), // iPad responsive fix
                     child: Text(
                       'Sources available in Settings.',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: OnboardingTheme.textSecondary.withOpacity(0.7),
-                            fontSize: 12,
+                            fontSize: sizing.isTablet ? 14 : 12, // iPad responsive fix
                             height: 1.2,
                           ),
                       textAlign: TextAlign.center,
                     ),
                   ),
-                  // Continue button - elegant spacing
+                  // Continue button - iPad responsive fix
                   FilledButton(
                     onPressed: _handleContinue,
                     style: FilledButton.styleFrom(
                       backgroundColor: OnboardingTheme.primaryGreen,
                       foregroundColor: OnboardingTheme.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      padding: EdgeInsets.symmetric(vertical: sizing.isTablet ? 20 : 16), // iPad responsive fix
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(32),
                       ),
@@ -392,19 +402,20 @@ class _OnboardingImpactSummaryState extends State<OnboardingImpactSummary>
                         return null;
                       }),
                     ),
-                    child: const Text(
+                    child: Text(
                       'Continue',
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: sizing.isTablet ? 18 : 16, // iPad responsive fix
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: sizing.spacingL), // iPad responsive fix
                     ],
                   ),
                 ),
-              ),
+                ), // iPad responsive fix: close ConstrainedBox
+              ), // iPad responsive fix: close Center
             );
           },
         ),

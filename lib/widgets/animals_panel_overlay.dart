@@ -84,11 +84,15 @@ class _AnimalsPanelOverlayState extends State<AnimalsPanelOverlay>
   }
 
   /// Calculate menu width: 190-220 (clamped)
+  /// iPad responsive fix: wider menu on tablets
   double _calculateMenuWidth(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    // Use a percentage of screen width, clamped to 190-220
-    final calculatedWidth = screenWidth * 0.52;
-    return calculatedWidth.clamp(190.0, 220.0);
+    final shortestSide = MediaQuery.of(context).size.shortestSide;
+    final isTablet = shortestSide >= 600;
+    // iPad responsive fix: use wider range on tablets
+    final calculatedWidth = screenWidth * (isTablet ? 0.40 : 0.52);
+    final maxWidth = isTablet ? 360.0 : 220.0;
+    return calculatedWidth.clamp(190.0, maxWidth);
   }
 
   /// Calculate menu height: based on scene area height, clamped to reasonable bounds
@@ -118,9 +122,10 @@ class _AnimalsPanelOverlayState extends State<AnimalsPanelOverlay>
     final screenSize = mediaQuery.size;
     final safeArea = mediaQuery.padding;
 
-    // Handle dimensions (standard screen baseline)
-    const handleWidth = 32.0; // 30-34 range
-    const handleHeight = 92.0; // 86-96 range
+    // Handle dimensions - iPad responsive fix: larger touch targets on tablets
+    final isTablet = sizing.isTablet;
+    final handleWidth = isTablet ? 40.0 : 32.0;
+    final handleHeight = isTablet ? 110.0 : 92.0;
 
     // Menu dimensions
     final menuWidth = _calculateMenuWidth(context);
@@ -396,19 +401,19 @@ class _AnimalCard extends StatelessWidget {
   final VoidCallback onTap;
   final ResponsiveSizing sizing;
 
-  // Size constants for badge and icon (enlarged)
-  static const double kBadgeSize = 62.0; // Increased from 56 (+10.7%)
-  static const double kIconSize = 46.0; // Increased from 42 (+9.5%)
+  // iPad responsive fix: dynamic sizes based on tablet detection
+  double get kBadgeSize => sizing.isTablet ? 80.0 : 62.0;
+  double get kIconSize => sizing.isTablet ? 60.0 : 46.0;
   static const double kBadgeBorderRadius = 16.0; // Large rounded corners
   static const double kBadgeBlurSigma = 12.0; // Frosted glass blur
   static const double kBadgeColorOpacity = 0.48; // Deep warm charcoal opacity
   
-  // Card padding constants (more relaxed)
-  static const double kCardVerticalPadding = 16.0; // Increased vertical padding (was ~12)
-  static const double kCardHorizontalPadding = 14.0; // Left padding
-  static const double kCardRightPadding = 14.0; // Reduced right padding (was ~24)
-  static const double kCardMinHeight = 88.0; // Increased min height (was ~72)
-  static const double kTitleCostSpacing = 10.0; // Increased spacing between title and cost
+  // iPad responsive fix: dynamic card padding
+  double get kCardVerticalPadding => sizing.isTablet ? 20.0 : 16.0;
+  double get kCardHorizontalPadding => sizing.isTablet ? 18.0 : 14.0;
+  double get kCardRightPadding => sizing.isTablet ? 18.0 : 14.0;
+  double get kCardMinHeight => sizing.isTablet ? 110.0 : 88.0;
+  double get kTitleCostSpacing => sizing.isTablet ? 14.0 : 10.0;
 
   const _AnimalCard({
     required this.animalType,
@@ -435,13 +440,13 @@ class _AnimalCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(20),
         child: ConstrainedBox(
-          constraints: const BoxConstraints(
-            minHeight: kCardMinHeight, // Increased card height for more relaxed feel
+          constraints: BoxConstraints(
+            minHeight: kCardMinHeight, // iPad responsive fix: removed const
           ),
           child: Padding(
-            padding: const EdgeInsets.only(
+            padding: EdgeInsets.only(
               left: kCardHorizontalPadding,
-              right: kCardRightPadding, // Reduced right padding (was ~24)
+              right: kCardRightPadding, // iPad responsive fix: removed const
               top: kCardVerticalPadding,
               bottom: kCardVerticalPadding,
             ),
